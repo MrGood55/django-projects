@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+  <style>
+    .container{
+            display:flex;
+            flex-direction: column;
+            align-items:center;
+            }
+        .image{
+            width:50px;
+            height:50px;
+            }
+        .row{
+            display:flex;
+            flex-direction: row;
+            align-items:center;
+            }
+  </style>
+</head>
+<body>
+
+
+  <div class="containter">
+    {% if products %}
+      {% for item in products %}
+      <div class="cart">
+        <img class="image"  src="{{item.product.img_url}}" alt="#"><br>
+        <span>title:</span><span>{{item.product.title}}</span><br>
+        <span>price:</span><span>{{item.price}}</span><br>
+        <span>quantity:</span><span>{{item.quantity}}</span><br>
+        <span>total:</span><span>{{item.total}}</span><br>
+        <a href="{% url 'app:detail' item.product.id%}">к товару</a>
+        <div class="row">
+          <a style="margin-right:30px;" href="{% url 'cart:plus_item' item.product.id%}"><h3>+</h3></a>
+          <a style="margin-right:30px;" href="{% url 'cart:minus_item' item.product.id%}"><h3>-</h3></a>
+        </div>
+
+
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <h3>В  корзине ничего нет</h3>
+    {% endif %}
+    
+    {% if sum %}
+      <h3>Full price is {{sum}}</h3>
+    <a href="{% url 'cart:clear_cart'%}"><h1>Clear cart</h1></a>
+    {% endif %}
+
+  </div>
+
+
+
+</body>
+</html>
