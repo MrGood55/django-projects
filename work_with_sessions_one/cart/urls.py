@@ -18,16 +18,25 @@ from django.contrib import admin
 from django.urls import path
 
 from .views import (
-index,get_to_cart,clear_cart,plus_item,minus_item,get_to_cart_for_btn
+index,
+get_to_cart,get_to_cart_for_btn,
+clear_cart,
+plus_item,plus_item_btn,
+minus_item,
+
 )
 
 app_name = 'cart'
 urlpatterns = [
     ###todo detail by slug
     path('', index,name='shopping_cart'),
+
     path('get_to_cart/<int:item_pk>', get_to_cart, name='get_to_cart'),
     path('get_to_cart_for_btn/', get_to_cart_for_btn, name='get_to_cart_for_btn'),
+
     path('plus_item/<int:item_pk>', plus_item, name='plus_item'),
+    path('plus_item_btn/', plus_item_btn, name='plus_item_btn'),
+
     path('minus_item/<int:item_pk>', minus_item, name='minus_item'),
     path('clear_cart/', clear_cart, name='clear_cart'),
 

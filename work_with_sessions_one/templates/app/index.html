@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Store</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <style>
         .container{
             display:flex;
@@ -26,11 +27,11 @@
             <h1 style="margin-right:20px;">Products</h1>
             <div class="cart">
                 <a href="{% url 'cart:shopping_cart' %}">Корзина</a>
-                <span>
+                {% comment %} <span>
                     Товаров в корзине : {{request.session.cart_products|length}}
-                </span>
+                </span> {% endcomment %}
                 <div>
-                    Товаров в корзине : <span class="cart-items">0</span>
+                    Товаров в корзине : <span class="cart-items">{{request.session.cart_products|length}}</span>
                 </div>
             </div>
         </div>
@@ -39,23 +40,30 @@
             <img class="image"  src="{{product.img_url}}" alt="#">
             <a href="{% url 'app:detail' product.id %}" ><h3>{{product.title}}</h3></a>
 
-                <a href="{% url 'cart:get_to_cart' product.id %}">Добавить в корзирну</a>
-            <button class="addToCartBtn" type="button" value="{{product.id}}">Добавить кнопкой</button>
+                {% comment %} <a href="{% url 'cart:get_to_cart' product.id %}">Добавить в корзирну</a> {% endcomment %}
+            <button class="addToCartBtn" type="button" data-index="{{product.id}}">Добавить в корзирну</button>
         {% endfor %}
 
     </div>
 
 
 <script type="text/javascript">
-    $('.addToCartBtn').click(function(){
+
+    
+    $('.addToCartBtn').click(function(e){
+    e.preventDefault();
     var _vm=$(this);
-    var _productId =$('.addToCartBtn').val();
+    var _productId =$(this).data('index');
+    
     $.ajax(
     {
-        type:"GET",
+        
         url: "{% url 'cart:get_to_cart_for_btn' %}",
+        type : 'POST',
         data:{
-                 'id':_productId
+                 'id':_productId,
+                 csrfmiddlewaretoken: '{{ csrf_token }}',
+                 action: 'post'
         },
         dataType:'json',
         beforeSend:function(){
@@ -64,6 +72,8 @@
         success:function(res){
             $('.cart-items').text(res.items_in_cart);
             _vm.attr('disabled',false);
+            
+            
             }
      })
 });

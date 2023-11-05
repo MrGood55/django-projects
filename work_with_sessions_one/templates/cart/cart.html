@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <style>
     .container{
             display:flex;
@@ -28,17 +28,20 @@
     {% if products %}
       {% for item in products %}
       <div class="cart">
-        <img class="image"  src="{{item.product.img_url}}" alt="#"><br>
-        <span>title:</span><span>{{item.product.title}}</span><br>
-        <span>price:</span><span>{{item.price}}</span><br>
-        <span>quantity:</span><span>{{item.quantity}}</span><br>
-        <span>total:</span><span>{{item.total}}</span><br>
-        <a href="{% url 'app:detail' item.product.id%}">к товару</a>
-        <div class="row">
-          <a style="margin-right:30px;" href="{% url 'cart:plus_item' item.product.id%}"><h3>+</h3></a>
-          <a style="margin-right:30px;" href="{% url 'cart:minus_item' item.product.id%}"><h3>-</h3></a>
-        </div>
 
+        <img class="image"  src="{{item.img_url}}" alt="#"><br>
+        <span class='title'>title:</span><span>{{item..title}}</span><br>
+        <span class='price'>price:</span><span>{{item.price}}</span><br>
+        <span class='quantity'>quantity:</span><span>{{item.quantity}}</span><br>
+        <span class='total'>total:</span><span>{{item.total}}</span><br>
+        <a  href="{% url 'app:detail' item.id%}">к товару</a>
+        <div class="row">
+          <a style="margin-right:30px;" href="{% url 'cart:plus_item' item.id%}"><h3>+</h3></a>
+          <button class="plus_item" type="button" data-index="{{item.id}}"><h3>+</h3></button>
+
+          <a style="margin-right:30px;" href="{% url 'cart:minus_item' item.id%}"><h3>-</h3></a>
+        </div>
+          
 
       </div>
       {% endfor %}
@@ -54,6 +57,38 @@
 
   </div>
 
+
+<script type="text/javascript">
+
+    
+      $('.plus_item').click(function(e){
+      e.preventDefault();
+      var _vm=$(this);
+      var _productId =$(this).data('index');
+      alert(_productId);  
+      $.ajax(
+      {
+          
+          url: "{% url 'cart:plus_item_btn' %}",
+          type : 'POST',
+          data:{
+                    'id':_productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+          },
+          dataType:'json',
+          beforeSend:function(){
+              _vm.attr('disabled',true);
+              },
+          success:function(res){
+  
+              _vm.attr('disabled',false);
+              
+              
+              }
+        })
+      });
+  </script>
 
 
 </body>
