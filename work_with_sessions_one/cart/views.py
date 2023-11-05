@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.http import JsonResponse
 from app.models import Product
 from decimal import Decimal
 # Create your views here.
@@ -6,7 +7,7 @@ from decimal import Decimal
 
 def index(request):
     cart = request.session.get('cart_products')
-    print(f'len(cart) is {len(cart)}')
+    # print(f'len(cart) is {len(cart)}')
     if len(cart) >= 1:
         keys = list(cart.keys())
         products = Product.objects.filter(pk__in=keys)
@@ -17,15 +18,14 @@ def index(request):
             item['price'] = round(Decimal(item['product'].price),2)
             item['total'] = round(item['price']*item['quantity'],2)
             sum += item['total']
-        # print(f'keys is {keys}')
-        # print(f'cart for cart is {cart}')
-        # print(f'products is {products}')
-        print(f'cart.values is {cart}')
+        # print(f'cart.values is {cart}')
         context = {
             'products' : cart.values(),
             'sum' : sum
-
         }
+
+
+        print(f'sum is {context}')
         print(f'sum is {sum}')
     else:
         context = {
@@ -42,8 +42,26 @@ def get_to_cart(request,item_pk):
     else:
         cart[str(item_pk)]['quantity'] = cart[str(item_pk)]['quantity'] +1
     request.session.modified = True
-    # print(f'cart is {cart}| item_pk is {item_pk}| ',product.id,product.title,product.price,product.img_url)
-    return redirect('app:index')
+
+    # return redirect('app:index')
+    return JsonResponse({'data':cart,'items_in_cart': len(cart)})
+
+
+def get_to_cart_for_btn(request):
+    cart_session = request.session.get('cart_products')
+    if cart_session.get(str(request.GET['id']), False) is False:
+        cart_session[str(request.GET['id'])] = {
+            'quantity': 1
+        }
+    else:
+        cart_session[str(request.GET['id'])]['quantity'] = cart_session[str(request.GET['id'])]['quantity'] + 1
+
+    request.session.modified = True
+
+
+
+
+    return JsonResponse({'data':cart_session,'items_in_cart': len(cart_session)})
 def clear_cart(request):
     request.session['cart_products'] = {}
     request.session.modified = True

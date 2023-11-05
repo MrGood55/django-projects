@@ -24,15 +24,73 @@
     <div class="container">
         <div class="menu">
             <h1 style="margin-right:20px;">Products</h1>
-            <div class="cart"><a href="{% url 'cart:shopping_cart' %}">Корзина</a></div>
+            <div class="cart">
+                <a href="{% url 'cart:shopping_cart' %}">Корзина</a>
+                <span>
+                    Товаров в корзине : {{request.session.cart_products|length}}
+                </span>
+                <div>
+                    Товаров в корзине : <span class="cart-items">0</span>
+                </div>
+            </div>
         </div>
 
         {% for product in products %}
             <img class="image"  src="{{product.img_url}}" alt="#">
-            <a href="{% url 'app:detail' product.id %}"><h3>{{product.title}}</h3></a>
-            <a href="{% url 'cart:get_to_cart' product.id %}">Добавить в корзирну</a>
+            <a href="{% url 'app:detail' product.id %}" ><h3>{{product.title}}</h3></a>
+
+                <a href="{% url 'cart:get_to_cart' product.id %}">Добавить в корзирну</a>
+            <button class="addToCartBtn" type="button" value="{{product.id}}">Добавить кнопкой</button>
         {% endfor %}
 
     </div>
+
+
+<script type="text/javascript">
+    $('.addToCartBtn').click(function(){
+    var _vm=$(this);
+    var _productId =$('.addToCartBtn').val();
+    $.ajax(
+    {
+        type:"GET",
+        url: "{% url 'cart:get_to_cart_for_btn' %}",
+        data:{
+                 'id':_productId
+        },
+        dataType:'json',
+        beforeSend:function(){
+            _vm.attr('disabled',true);
+            },
+        success:function(res){
+            $('.cart-items').text(res.items_in_cart);
+            _vm.attr('disabled',false);
+            }
+     })
+});
+</script>
+
+<!--    <script>-->
+<!--    $(document).on('click','.addToCartBtn',function(){-->
+<!--    var _vm=$(this);-->
+<!--    var _productId =$('.addToCartBtn').val();-->
+<!--    $.ajax({-->
+<!--        url:'cart:get_to_cart_for_btn',-->
+<!--        data:{-->
+<!--            'id':_productId-->
+<!--            },-->
+<!--        method: 'GET',-->
+<!--        dataType:'json',-->
+<!--        beforeSend:function(){-->
+<!--            _vm.attr('disabled',true);-->
+<!--            },-->
+<!--        success:function(res){-->
+<!--            $('.cart-items').text(res.items_in_cart);-->
+<!--            _vm.attr('disabled',false);-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+
+
+<!--    </script>-->
 </body>
 </html>
