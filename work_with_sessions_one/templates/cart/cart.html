@@ -34,12 +34,12 @@
         <span class='price'>price:</span><span>{{item.price}}</span><br>
         <span class='quantity'>quantity:</span><span>{{item.quantity}}</span><br>
         <span class='total'>total:</span><span>{{item.total}}</span><br>
-        <a  href="{% url 'app:detail' item.id%}">к товару</a>
+        {% comment %} <a  href="{% url 'app:detail' item.id%}">к товару</a> {% endcomment %}
         <div class="row">
           <a style="margin-right:30px;" href="{% url 'cart:plus_item' item.id%}"><h3>+</h3></a>
           <button class="plus_item" type="button" data-index="{{item.id}}"><h3>+</h3></button>
 
-          <a style="margin-right:30px;" href="{% url 'cart:minus_item' item.id%}"><h3>-</h3></a>
+          {% comment %} <a style="margin-right:30px;" href="{% url 'cart:minus_item' item.id%}"><h3>-</h3></a> {% endcomment %}
         </div>
           
 

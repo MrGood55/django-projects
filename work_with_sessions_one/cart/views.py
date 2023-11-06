@@ -6,6 +6,7 @@ from decimal import Decimal
 
 
 def index(request):
+    
     cart = request.session.get('cart_products')
     if len(cart) >= 1:
         keys = list(cart.keys())
@@ -14,7 +15,7 @@ def index(request):
             cart[str(product.id)]['id'] = product.id
             cart[str(product.id)]['title'] = product.title
             cart[str(product.id)]['img_url'] = product.img_url
-            cart[str(product.id)]['price'] = round(Decimal(product.price),2)
+            cart[str(product.id)]['price'] = round(float(product.price),2)
             
 
         sum = 0
@@ -22,6 +23,10 @@ def index(request):
             # item['price'] = round(Decimal(item['price']),2)
             item['total'] = round(item['price']*item['quantity'],2)
             sum += item['total']
+        # sum = round(sum,2)
+        # cart['sum'] = sum
+        
+        request.session.modified = True
         
         context = {
             'products' : cart.values(),
@@ -29,7 +34,7 @@ def index(request):
         }
 
 
-        print(f'sum is {context}')
+        # print(f'sum is {context}')
         # print(f'sum is {sum}')
     else:
         context = {
@@ -82,7 +87,9 @@ def plus_item(request,item_pk):
     else:
         cart[str(item_pk)]['quantity'] = cart[str(item_pk)]['quantity'] +1
     request.session.modified = True
-    return redirect('cart:shopping_cart')
+    # return redirect('cart:shopping_cart')
+    return JsonResponse({'data':cart})
+
 
 
 def plus_item_btn(request):
