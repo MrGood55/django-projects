@@ -22,22 +22,25 @@
   </style>
 </head>
 <body>
-
-
+  <div class="containter">
+    <a  href="{% url 'app:index' %}">Главная</a>
+  </div>
+    
   <div class="containter">
     {% if products %}
       {% for item in products %}
-      <div class="cart">
+      <div class="cart" id='cart_{{item.id}}'>
 
         <img class="image"  src="{{item.img_url}}" alt="#"><br>
-        <span class='title'>title:</span><span>{{item..title}}</span><br>
-        <span class='price'>price:</span><span>{{item.price}}</span><br>
-        <span class='quantity'>quantity:</span><span>{{item.quantity}}</span><br>
-        <span class='total'>total:</span><span>{{item.total}}</span><br>
-        {% comment %} <a  href="{% url 'app:detail' item.id%}">к товару</a> {% endcomment %}
+        <span >title:</span><span id='title_{{item.id}}'>{{item.title}}</span><br>
+        <span >price:</span><span id='price_{{item.id}}'>{{item.price}}</span><br>
+        <span >quantity:</span><span id='quantity_{{item.id}}'>{{item.quantity}}</span><br>
+        <span >total:</span><span id='total_{{item.id}}'>{{item.total}}</span><br>
+        <a  href="{% url 'app:detail' item.id%}">к товару</a>
         <div class="row">
           <a style="margin-right:30px;" href="{% url 'cart:plus_item' item.id%}"><h3>+</h3></a>
           <button class="plus_item" type="button" data-index="{{item.id}}"><h3>+</h3></button>
+          <button class="minus_item" type="button" data-index="{{item.id}}"><h3>-</h3></button>
 
           {% comment %} <a style="margin-right:30px;" href="{% url 'cart:minus_item' item.id%}"><h3>-</h3></a> {% endcomment %}
         </div>
@@ -65,7 +68,7 @@
       e.preventDefault();
       var _vm=$(this);
       var _productId =$(this).data('index');
-      alert(_productId);  
+      {% comment %} alert(_productId);   {% endcomment %}
       $.ajax(
       {
           
@@ -83,11 +86,45 @@
           success:function(res){
   
               _vm.attr('disabled',false);
-              
-              
+              console.log(res.data[_productId]);
+              document.getElementById('quantity_'+_productId).textContent = res.data[_productId].quantity;
+              document.getElementById('total_'+_productId).textContent = (res.data[_productId].price * res.data[_productId].quantity).toFixed(2);
               }
         })
       });
+
+
+      $('.minus_item').click(function(e){
+        e.preventDefault();
+        var _vm=$(this);
+        var _productId =$(this).data('index');
+        $.ajax(
+        {
+            
+            url: "{% url 'cart:minus_item_btn' %}",
+            type : 'POST',
+            data:{
+                      'id':_productId,
+                      csrfmiddlewaretoken: '{{ csrf_token }}',
+                      action: 'post'
+            },
+            dataType:'json',
+            beforeSend:function(){
+                _vm.attr('disabled',true);
+                },
+            success:function(res){
+                _vm.attr('disabled',false);
+                if (res.data[_productId] !== undefined){
+                  document.getElementById('quantity_'+_productId).textContent = res.data[_productId].quantity;
+                  document.getElementById('total_'+_productId).textContent = (res.data[_productId].price * res.data[_productId].quantity).toFixed(2);
+                }else{
+                  document.getElementById('cart_'+_productId).remove();
+                }
+                console.log(Object.keys(res.data).length);
+                
+                }
+          })
+        });
   </script>
 
 

@@ -22,7 +22,7 @@ index,
 get_to_cart,get_to_cart_for_btn,
 clear_cart,
 plus_item,plus_item_btn,
-minus_item,
+minus_item,minus_item_btn
 
 )
 
@@ -38,6 +38,8 @@ urlpatterns = [
     path('plus_item_btn/', plus_item_btn, name='plus_item_btn'),
 
     path('minus_item/<int:item_pk>', minus_item, name='minus_item'),
+    path('minus_item_btn', minus_item_btn, name='minus_item_btn'),
+
     path('clear_cart/', clear_cart, name='clear_cart'),
 
 

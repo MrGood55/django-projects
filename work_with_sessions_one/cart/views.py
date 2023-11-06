@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from app.models import Product
-from decimal import Decimal
+
 # Create your views here.
 
 
@@ -16,16 +16,11 @@ def index(request):
             cart[str(product.id)]['title'] = product.title
             cart[str(product.id)]['img_url'] = product.img_url
             cart[str(product.id)]['price'] = round(float(product.price),2)
-            
-
         sum = 0
         for item in cart.values():
-            # item['price'] = round(Decimal(item['price']),2)
             item['total'] = round(item['price']*item['quantity'],2)
             sum += item['total']
-        # sum = round(sum,2)
-        # cart['sum'] = sum
-        
+        sum = round(sum,2)
         request.session.modified = True
         
         context = {
@@ -33,9 +28,6 @@ def index(request):
             'sum' : sum
         }
 
-
-        # print(f'sum is {context}')
-        # print(f'sum is {sum}')
     else:
         context = {
 
@@ -99,6 +91,7 @@ def plus_item_btn(request):
             
     request.session.modified = True
 
+    # return JsonResponse({'data':list(cart_session.values())})
     return JsonResponse({'data':cart_session})
 
 
@@ -106,14 +99,27 @@ def plus_item_btn(request):
 def minus_item(request,item_pk):
     cart = request.session.get('cart_products')
     if cart.get(str(item_pk),False) is not False:
-        # print(f"quantity is {cart[str(item_pk)]['quantity']}")
-        if int(cart[str(item_pk)]['quantity']) > 1:
+        if int(cart[str(item_pk)]['quantity']) >= 1:
             cart[str(item_pk)]['quantity'] = cart[str(item_pk)]['quantity'] -1
         else:
             cart.pop(str(item_pk))
     else:
-        # print('wtf')
         pass
 
     request.session.modified = True
     return redirect('cart:shopping_cart')
+
+def minus_item_btn(request):
+
+    if request.POST.get('action') == 'post':
+        cart_session = request.session.get('cart_products')    
+        if int(cart_session[str(request.POST.get('id'))]['quantity']) > 0:
+            cart_session[str(request.POST.get('id'))]['quantity'] = cart_session[str(request.POST.get('id'))]['quantity'] -1
+            if int(cart_session[str(request.POST.get('id'))]['quantity']) == 0:
+                cart_session.pop(str(request.POST.get('id')))
+        else:
+            cart_session.pop(str(request.POST.get('id')))
+    else:
+        pass        
+    request.session.modified = True
+    return JsonResponse({'data':cart_session})
