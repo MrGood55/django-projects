@@ -1,0 +1,43 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Список продуктов{% endblock %}
+
+{% block content %}
+    <!-- Счетчик товаров в корзине -->
+    <div class="mt-4">
+        {% if cart|length > 0 %}
+            <p>Товаров в корзине: {{ cart|length }}</p>
+        {% else %}
+            <p>Корзина пуста</p>
+        {% endif %}
+    </div>
+    
+    <div class="container mt-4">
+        <h1 class="mb-4">Список продуктов</h1>
+
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% comment %} <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"> {% endcomment %}
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="{% url 'app:product_detail' pk=product.pk %}">{{ product.name }}</a></h5>
+                            <p class="card-text">{{ product.description }}</p>
+                            <p class="card-text">Цена: {{ product.price }}</p>
+                            
+                            <!-- Форма для добавления продукта в корзину -->
+                            <form method="post" action="{% url 'cart:add_to_cart' product.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        
+
+    </div>
+
+{% endblock %}

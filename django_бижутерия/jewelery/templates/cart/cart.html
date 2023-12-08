@@ -1,0 +1,29 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Корзина</h1>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Продукт</th>
+                    <th scope="col">Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_info %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+
+{% endblock %}
