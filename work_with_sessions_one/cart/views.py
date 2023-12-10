@@ -70,6 +70,7 @@ def clear_cart(request):
     request.session['cart_products'] = {}
     request.session.modified = True
     return redirect('cart:shopping_cart')
+
 def plus_item(request,item_pk):
     cart = request.session.get('cart_products')
     if cart.get(str(item_pk),False) is False:

@@ -12,6 +12,8 @@
                 <tr>
                     <th scope="col">Продукт</th>
                     <th scope="col">Количество</th>
+                    <th scope="col">Стоимость</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -19,10 +21,34 @@
                     <tr>
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }}</td>
+                        <td class="row">
+                            <form method="post" action="{% url 'cart:add_to_cart_in_cart' item.product.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">+</button>
+                            </form>
+                            <form method="post" action="{% url 'cart:remove_from_cart_in_cart' item.product.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">-</button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
+            <thead>
+                <tr>
+                    <th scope="col">Итог:</th>
+                    <td>{{ full_price }}</td>
+                    <td></td>
+                    <td></td>
+                    
+                </tr>
+            </thead>
         </table>
+        <form method="post" action="{% url 'cart:get_session_go_to_order_and_clear'%}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Оформить заказ</button>
+        </form>
         
     </div>
 

@@ -1,0 +1,10 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+  <h2>Регистрация Менеджеров</h2>
+  <form method="post" action="{% url 'app:register_user_by_admin' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Зарегистрировать</button>
+  </form>
+{% endblock %}

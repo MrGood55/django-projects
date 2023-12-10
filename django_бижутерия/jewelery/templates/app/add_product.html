@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Добавить товар{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Добавить товар</h2>
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="form-type" value="product_form">
+        {{ product_form.as_p }}
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form-type" value="categorie_form">
+        {{ categorie_form.as_p }}
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+  </div>
+{% endblock %}

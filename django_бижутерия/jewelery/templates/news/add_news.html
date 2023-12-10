@@ -1,0 +1,14 @@
+
+
+{% extends 'app/base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Add News</h2>
+    <form method="post" enctype="multipart/form-data" class="mt-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Add News</button>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'app/base.html' %}
+
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>All News</h2>
+    {% for news in news_list %}
+      <div class="card mt-3">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'news:news_detail' pk=news.pk %}">{{ news.title }}</a>
+          </h5>
+          {% comment %} <p class="card-text">{{ news.content }}</p> {% endcomment %}
+          <p class="card-text"><small class="text-muted">Published on {{ news.created_at }}</small></p>
+          <!-- добавить новость для суперпользователя -->
+          {% if request.user.role == "ADMIN"   and  request.user.is_authenticated%}
+            <form method="post" action="{% url 'news:delete_news' pk=news.pk %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+

@@ -1,17 +1,85 @@
-{% extends 'app/base.html' %}
+
+ {% extends 'app/base.html' %}
 
 {% block title %}Список продуктов{% endblock %}
 
+
+
 {% block content %}
+
     <!-- Счетчик товаров в корзине -->
+    {% if  request.user.is_authenticated %}
     <div class="mt-4">
         {% if cart|length > 0 %}
-            <p>Товаров в корзине: {{ cart|length }}</p>
+            <p class="alert alert-success">Товаров в корзине: {{ cart|length }}</p>
         {% else %}
-            <p>Корзина пуста</p>
+            <p class="alert alert-info">Корзина пуста</p>
         {% endif %}
     </div>
+    {% endif %}
+
+    <div class="container   w-100 "><!--START CATEGORIES -->
+        <ul class="list-inline d-flex flex-wrap justify-content-center mt-3">
+
+          {% for c in cats %}
+              {% if c.pk == cat_selected %}
+                  <li class="list-inline-item">
+                    <button type="submit" class="btn btn-primary btn-block">{{c.name}}</button>
+                </li>|
+              {% else %}
+                {% if forloop.last %}
+                    <li class="list-inline-item  ">
+                        <a href="{{ c.get_absolute_url }}"><button type="submit" class="btn btn-primary btn-block">{{c.name}}</button></a>
+                    </li>
+                {% else %}
+                    <li class="list-inline-item  ">
+                        <a href="{{ c.get_absolute_url }}"><button type="submit" class="btn btn-primary btn-block">{{c.name}}</button></a>
+                    </li>
+                {% endif %}
+
+              {% endif %}
+          {% endfor %}
+        </ul>
+    </div><!--END CATEGORIES -->
+
+    {% if  request.user.is_authenticated and request.user.role == "ADMIN"%}
+    <div class="container   w-100 "><!--START DELETE CATEGORIES -->
+        <ul class="list-inline d-flex flex-wrap justify-content-center mt-3">
+
+          {% for c in cats %}
+              {% if c.pk == cat_selected %}
+                <li class="list-inline-item">
+                    <form method="post" action="{% url 'cart:delete_categorie' c.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-block mt-1">{{c.name}}</button>
+                    </form>
+                </li>|
+              {% else %}
+                {% if forloop.last %}
+                    <li class="list-inline-item">
+                        <form method="post" action="{% url 'cart:delete_categorie' c.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-block mt-1">{{c.name}}</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="list-inline-item">
+                        <form method="post" action="{% url 'cart:delete_categorie' c.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-block mt-1">{{c.name}}</button>
+                        </form>
+                    </li>
+                {% endif %}
+
+              {% endif %}
+          {% endfor %}
+        </ul>
+    </div><!--END CATEGORIES -->
+    {% endif %}
+
+
     
+
     <div class="container mt-4">
         <h1 class="mb-4">Список продуктов</h1>
 
@@ -19,25 +87,79 @@
             {% for product in products %}
                 <div class="col-md-4 mb-4">
                     <div class="card">
-                        {% comment %} <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"> {% endcomment %}
+                        
                         <div class="card-body">
                             <h5 class="card-title"><a href="{% url 'app:product_detail' pk=product.pk %}">{{ product.name }}</a></h5>
-                            <p class="card-text">{{ product.description }}</p>
                             <p class="card-text">Цена: {{ product.price }}</p>
-                            
+                            {% if  request.user.is_authenticated %}
                             <!-- Форма для добавления продукта в корзину -->
                             <form method="post" action="{% url 'cart:add_to_cart' product.pk %}">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+                                <button type="submit" class="btn btn-primary btn-block">Добавить в корзину</button>
                             </form>
+                            {% endif %}
+                            {% if  request.user.is_authenticated and request.user.role == "ADMIN"%}
+                            <form method="post" action="{% url 'cart:delete_product' product.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-block mt-1">Удалить</button>
+                            </form>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-
+        
+        <nav class="container mt-3">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                {% endif %}
+        
+                {% for p in paginator.page_range %}
+                    {% if page_obj.number == p %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ p }}</span>
+                        </li>
+                    {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+        
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
         
 
+        <!-- Вывод трех последних новостей -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>Последние новости</h4>
+            </div>
+            <div class="card-body">
+                {% for news in latest_news %}
+                    <p class="mb-0"><strong>{{ news.title }}</strong> - {{ news.created_at }}</p>
+                    <p>{{ news.content }}</p>
+                    <hr>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-
 {% endblock %}
+
+
+
+
+

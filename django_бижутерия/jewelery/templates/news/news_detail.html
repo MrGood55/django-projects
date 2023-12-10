@@ -1,0 +1,14 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>{{ news.title }}</h2>
+    <div class="card mt-3">
+      <div class="card-body">
+        <p class="card-text">{{ news.content }}</p>
+        <p class="card-text"><small class="text-muted">Published on {{ news.created_at }}</small></p>
+        <p class="card-text"><small class="text-muted">Last updated on {{ news.updated_at }}</small></p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

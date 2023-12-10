@@ -1,0 +1,32 @@
+
+
+
+
+
+
+
+
+
+{% extends 'app/base.html' %}
+
+{% block title %}Добавить товар{% endblock %}
+
+{% block content %}
+  <h2>Добавить товар</h2>
+
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form-type" value="product_form">
+        {{ product_form.as_p }}
+        <button type="submit">Добавить</button>
+    </form>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form-type" value="categorie_form">
+        {{ categorie_form.as_p }}
+        <button type="submit">Добавить</button>
+    </form>
+
+
+{% endblock %} 

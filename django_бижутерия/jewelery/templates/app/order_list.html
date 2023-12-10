@@ -1,0 +1,43 @@
+{% extends 'app/base.html' %}
+
+
+
+
+
+{% block content %}
+  <h2>Заказы пользователей</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Имя</th>
+        <th>Название товара</th>
+        <th>Время заказа</th>
+        <th>Количество</th>
+        <th>Полная стоимость</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <td>{{ order.user }}</td>
+          <td>{{ order.product.name }}</td>
+          <td>{{ order.created }}</td>
+          <td>{{ order.quantity }} штук</td>
+          <td>{{ order.get_cost }}р</td>
+          <td>
+            <form method="post" action="{% url 'app:order_delete' order.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+
+
+
+
